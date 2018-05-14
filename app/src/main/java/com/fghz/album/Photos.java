@@ -54,7 +54,7 @@ public class Photos extends Fragment {
     public Photos(String type) {
         this.type = type;
         Log.d("in this album", "type is not null");
-        if (getContext() == null) Log.d("getContext", "Null");
+        if (getActivity() == null) Log.d("getContext", "Null");
 
     }
     // 重写创建fregement方法
@@ -64,7 +64,7 @@ public class Photos extends Fragment {
         View view = inflater.inflate(R.layout.fg_photos,container,false);
         gridView = (GridView) view.findViewById(R.id.gridView1);
         if (type != null) {
-            this.result = getAlbumPhotos(getContext(), this.type);
+            this.result = getAlbumPhotos(getActivity(), this.type);
             try {
                 android.support.v7.app.ActionBar actionBar = MainActivity.actionBar;
                 actionBar.setDisplayHomeAsUpEnabled(true);

@@ -7,13 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.List;
-
 import com.bumptech.glide.Glide;
 import com.fghz.album.R;
 import com.fghz.album.entity.AlbumItem;
 import com.fghz.album.view.GlideRoundTransform;
+
+import java.util.List;
 
 
 /**

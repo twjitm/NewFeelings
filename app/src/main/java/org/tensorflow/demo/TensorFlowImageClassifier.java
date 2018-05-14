@@ -17,19 +17,14 @@ package org.tensorflow.demo;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Trace;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Vector;
-import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+import java.util.*;
 
 /** A classifier specialized to label images using TensorFlow. */
 public class TensorFlowImageClassifier implements Classifier{
@@ -115,7 +110,7 @@ public class TensorFlowImageClassifier implements Classifier{
     return inferenceInterface.initializeTensorFlow(assetManager, modelFilename);
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+
   @Override
   public List<Recognition> recognizeImage(final Bitmap bitmap) {
     // Log this method so that it can be analyzed with systrace.
@@ -177,4 +172,5 @@ public class TensorFlowImageClassifier implements Classifier{
   public void close() {
     inferenceInterface.close();
   }
+
 }

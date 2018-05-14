@@ -1,4 +1,4 @@
-package com.fghz.album;
+package androidTest.java.com.fghz.album;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

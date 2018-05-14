@@ -27,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ import static com.fghz.album.utils.ImageDealer.do_tensorflow;
 import static com.fghz.album.utils.ImageDealer.insertImageIntoDB;
 
 /**
- * Created by dongchangzhang on 17-1-1.
+ * Created by twjtim on 17-1-1.
  */
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -67,7 +66,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private TextView textView = null;
     private TextView textViewTitle = null;
     private ProgressBar pbar;
-    private final String[] actions =  {
+    private final String[] actions = {
             "全部进入APP时处理", "全部后台处理", "根据图片数量决定"};
 
     private Handler myHandler = new Handler() {
@@ -131,18 +130,17 @@ public class WelcomeActivity extends AppCompatActivity {
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.SYSTEM_ALERT_WINDOW,
                 }, PERMISSION_REQUEST_STORAGE);
-            }
-            else {
+            } else {
                 prepareForApplication();
             }
-        }
-        else {
+        } else {
             prepareForApplication();
         }
     }
 
     /**
      * do it after require permission
+     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -150,11 +148,12 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        doNext(requestCode,grantResults);
+        doNext(requestCode, grantResults);
     }
 
     /**
      * if have permission will do this, or show a toast
+     *
      * @param requestCode
      * @param grantResults
      */
@@ -188,26 +187,28 @@ public class WelcomeActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-            Looper.prepare();
-            do_prepare(WelcomeActivity.this);
-            Looper.loop();
+                Looper.prepare();
+                do_prepare(WelcomeActivity.this);
+                Looper.loop();
             }
         }).start();
 
     }
+
     /**
      * when open application, this function will scan images in device and check them with the db
      * of this application to confirm whether the image has been classified by tf or whether the
      * images had been delete in other places, and do something to keep application running with
      * no error
+     *
      * @param ctx
      */
     private void do_prepare(Context ctx) {
 
         // mark images which in my db but not in device
-        stillInDeviceImages = new ArrayList<>();
+        stillInDeviceImages = new ArrayList<String>();
         // save images which are not be classified by tf
-        notBeClassifiedImages = new ArrayList<>();
+        notBeClassifiedImages = new ArrayList<String>();
         // get all image in phone
         List<Map> imagesInDevice = SystemDatabseOperator.getExternalImageInfo(ctx);
         // operator for my db
@@ -225,8 +226,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 // not be classified
                 notBeClassifiedImages.add(url);
                 Log.d("TFInformation", "no");
-            }
-            else {
+            } else {
                 // had been classified
                 stillInDeviceImages.add(url);
                 Log.d("TFInformation", "yes");
@@ -242,10 +242,9 @@ public class WelcomeActivity extends AppCompatActivity {
             findResult = operator.search("AlbumPhotos", "url = '" + url + "'");
             if (findResult.size() == 0) {
                 // had been deleted, erase it in db
-                operator.erase("AlbumPhotos", "url = ?", new String[] { "'" + url + "'"});
-                operator.erase("TFInformation", "url = ?", new String[] { "'" + url + "'"});
-            }
-            else {
+                operator.erase("AlbumPhotos", "url = ?", new String[]{"'" + url + "'"});
+                operator.erase("TFInformation", "url = ?", new String[]{"'" + url + "'"});
+            } else {
                 // not be deleted, do nothing
             }
         }
@@ -257,9 +256,8 @@ public class WelcomeActivity extends AppCompatActivity {
             findResult = operator.search("AlbumPhotos", "album_name = '" + album_name + "'");
             if (findResult.size() == 0) {
                 // had been deleted, erase it in db
-                operator.erase("Album", "album_name = ?", new String[] { "'" + album_name + "'"});
-            }
-            else {
+                operator.erase("Album", "album_name = ?", new String[]{"'" + album_name + "'"});
+            } else {
                 // not be deleted, do nothing
             }
         }
@@ -287,18 +285,16 @@ public class WelcomeActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(WelcomeActivity.this);
             builder.setTitle("选择图片处理的时间");
             builder.setIcon(R.drawable.things);
-            builder.setItems(actions, new DialogInterface.OnClickListener()
-            {
+            builder.setItems(actions, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
+                public void onClick(DialogInterface dialog, int which) {
                     final MyDatabaseOperator operator = new MyDatabaseOperator(WelcomeActivity.this, Config.DB_NAME, Config.dbversion);
                     ContentValues values = new ContentValues();
                     values.put("notFirstIn", "true");
                     values.put("updateTime", which);
                     operator.insert("Settings", values);
                     operator.close();
-                    Toast.makeText(WelcomeActivity.this,  actions[which], Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WelcomeActivity.this, actions[which], Toast.LENGTH_SHORT).show();
                     do_byLevel(which);
                 }
             });
@@ -314,22 +310,20 @@ public class WelcomeActivity extends AppCompatActivity {
      * 2. when open app, just only scan picture and clear app'db, classifying images in background
      * 3. if image is not too much, goto MainActivity until new images have been classified, or do
      * it as choice 2
+     *
      * @param level 1, 2 or 3
      */
     private void do_byLevel(int level) {
         if (level == 0) {
             classifyNewImages();
-        }
-        else if (level == 1) {
+        } else if (level == 1) {
             Config.needToBeClassified = notBeClassifiedImages;
             myHandler.sendEmptyMessage(0x24);
-        }
-        else if (level == 2) {
+        } else if (level == 2) {
             if (notBeClassifiedImages.size() <= Config.imageNumber) {
                 classifyNewImages();
-            }
-            else {
-                Config.needToBeClassified = new ArrayList<>();
+            } else {
+                Config.needToBeClassified = new ArrayList<String>();
                 Config.needToBeClassified.addAll(notBeClassifiedImages.subList(Config.imageNumber, notBeClassifiedImages.size()));
                 notBeClassifiedImages = notBeClassifiedImages.subList(0, Config.imageNumber);
                 classifyNewImages();
@@ -343,9 +337,10 @@ public class WelcomeActivity extends AppCompatActivity {
      */
     private void do_finishThisActivity() {
         pbar.setVisibility(pbar.GONE);
-        textView.setText("尽情享受吧");
+        textView.setText("欢迎使用本系统");
         //setAppName();
         final Intent it = new Intent(getApplication(), MainActivity.class); //你要转向的Activity
+        // final Intent it = new Intent(getApplication(), IndexActivity.class);
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -356,8 +351,9 @@ public class WelcomeActivity extends AppCompatActivity {
         };
         timer.schedule(task, 1000 * 2);
     }
+
     private void setAppName() {
-        textViewTitle.setText("New Feelings");
+        textViewTitle.setText("照片分类器");
         textViewTitle.setTextSize(32);
         textViewTitle.setTextColor(Color.rgb(140, 21, 119));
     }
@@ -370,7 +366,7 @@ public class WelcomeActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void run() {
-            Looper.prepare();
+                Looper.prepare();
                 // init tensorflow
                 if (classifier == null) {
                     // get permission
@@ -396,7 +392,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
                 myoperator.close();
                 myHandler.sendEmptyMessage(0x24);
-            Looper.loop();
+                Looper.loop();
             }
         }).start();
     }

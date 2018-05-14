@@ -41,10 +41,10 @@ public class SystemDatabseOperator {
         Cursor cursor = contentResolver.query(uri, columns, null, null, null);
         if (cursor != null) {
             Map<String, String> item;
-            List<Map> result = new ArrayList<>();
+            List<Map> result = new ArrayList<Map>();
             while (cursor.moveToNext()) {
                 String[] columnNames = cursor.getColumnNames();
-                item = new HashMap<>();
+                item = new HashMap<String, String>();
                 for (String columnName : columnNames) {
                     int columnIndex = cursor.getColumnIndex(columnName);
                     String columnValue = cursor.getString(columnIndex);

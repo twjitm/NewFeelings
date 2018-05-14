@@ -2,6 +2,7 @@ package com.fghz.album;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -27,13 +28,17 @@ import java.util.Map;
 
 import com.bumptech.glide.Glide;
 import com.fghz.album.adapter.HorizontalScrollViewAdapter;
+import com.fghz.album.utils.ImageProcess;
+import com.fghz.album.utils.RotateTransformation;
 import com.fghz.album.view.MyHorizontalScrollView;
 import com.fghz.album.view.MyHorizontalScrollView.CurrentImageChangeListener;
 import com.fghz.album.view.MyHorizontalScrollView.OnItemClickListener;
+
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.fghz.album.utils.ImagesScaner.getAlbumPhotos;
 import static com.fghz.album.utils.ImagesScaner.getMediaImageInfo;
+
 import com.fghz.album.R;
 
 /**
@@ -45,11 +50,11 @@ import com.fghz.album.R;
 // some method may be used about db or others
 // adapter && view
 
-public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnClickListener */{
+public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnClickListener */ {
 
     // 初始化几个textview， 可以点击并且出发事件
     private TextView txt_back;
-//    private TextView txt_share;
+    //    private TextView txt_share;
     private TextView txt_love;
     private TextView txt_delete;
 
@@ -59,7 +64,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
     private HorizontalScrollViewAdapter mAdapter;
     private ImageView mImg;
     // 照片数组。照片在drawable文件夹中，名字为a.png ...
-    private List<Map> mDatas ;
+    private List<Map> mDatas;
 
     private PhotoViewAttacher mAttacher;
     // which image
@@ -72,13 +77,11 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
 
     private int position_tmp;
 
-    private Handler myHandler = new Handler()
-    {
+    private Handler myHandler = new Handler() {
         @Override
         //重写handleMessage方法,根据msg中what的值判断是否执行后续操作
         public void handleMessage(Message msg) {
-            switch (msg.what)
-            {
+            switch (msg.what) {
                 case 0x21:
 
                     Glide
@@ -119,23 +122,21 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
         initPhoto();
         if (type != null)
             mDatas = getAlbumPhotos(this, this.type);
-        // 下面设置下面缩略图上面大图。
+            // 下面设置下面缩略图上面大图。
         else
             mDatas = getMediaImageInfo(this.getBaseContext());
         mImg = (ImageView) findViewById(R.id.id_content);
 //        mAttacher = new PhotoViewAttacher(mImg);
-        Glide.with(PhotoDetailActivity.this).load((String) mDatas.get(position_now).get("_data")).into(mImg);
+        Glide.with(PhotoDetailActivity.this).load((String) mDatas.get(position_now).get("_data")).transform(new RotateTransformation(PhotoDetailActivity.this,90f)).dontAnimate().into(mImg);
 
         mHorizontalScrollView = (MyHorizontalScrollView) findViewById(R.id.id_horizontalScrollView);
         mAdapter = new HorizontalScrollViewAdapter(this, mDatas);
         //添加滚动回调
         mHorizontalScrollView
-                .setCurrentImageChangeListener(new CurrentImageChangeListener()
-                {
+                .setCurrentImageChangeListener(new CurrentImageChangeListener() {
                     @Override
                     public void onCurrentImgChanged(int position,
-                                                    View viewIndicator)
-                    {
+                                                    View viewIndicator) {
                         if (!init) {
                             position = position_now;
                             init = true;
@@ -152,13 +153,11 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
                     }
                 });
         //添加点击回调
-        mHorizontalScrollView.setOnItemClickListener(new OnItemClickListener()
-        {
+        mHorizontalScrollView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-            public void onClick(View view, int position)
-            {
-                mImg.setImageURI(Uri.fromFile(new File((String)mDatas.get(position).get("_data"))));
+            public void onClick(View view, int position) {
+                mImg.setImageURI(Uri.fromFile(new File((String) mDatas.get(position).get("_data"))));
 
                 view.setBackgroundColor(Color.parseColor("#AA024DA4"));
             }
@@ -166,6 +165,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
         //设置适配器
         mHorizontalScrollView.initDatas(mAdapter, position_now);
     }
+
     private void initPhoto() {
         Intent intent = getIntent();
         try {
@@ -178,6 +178,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
         }
         Log.d("Test-----------------: ", "" + position_now + " " + url);
     }
+
     //UI组件初始化与事件绑定
     private void bindViews() {
         // 返回删除等按钮
@@ -191,6 +192,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
 //        txt_love.setOnClickListener(this);
 //        txt_delete.setOnClickListener(this);
     }
+
     // 恢复点击状态为未点击状态
     private void setSelect() {
 //        txt_back.setSelected(false);
@@ -198,8 +200,10 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
 //        txt_love.setSelected(false);
 //        txt_delete.setSelected(false);
     }
+
     /**
      * 生成动作栏上的菜单项目
+     *
      * @param menu
      * @return
      */
@@ -209,6 +213,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
         inflater.inflate(R.menu.menu_for_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     /**
      * 监听菜单栏目的动作，当按下不同的按钮执行相应的动作
      *
@@ -229,13 +234,40 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
                 if (!init) {
                     position = position_now;
                 } else {
-                    position =  mHorizontalScrollView.getmShowIndex();
+                    position = mHorizontalScrollView.getmShowIndex();
                 }
                 // send args
                 intent.putExtra("position", position);
-                intent.putExtra("url", (String)mDatas.get(position).get("_data"));
+                intent.putExtra("url", (String) mDatas.get(position).get("_data"));
                 startActivity(intent);
                 break;
+            case R.id.action_ruihua://图片锐化
+                ImageProcess process=new ImageProcess();
+                int rui_position;
+                if (!init) {
+                    rui_position = position_now;
+                } else {
+                    rui_position = mHorizontalScrollView.getmShowIndex();
+                }
+                Bitmap bitmap = mImg.getDrawingCache();
+                Bitmap newbitmap = process.sharpenImageAmeliorate(bitmap);
+                mImg.setImageBitmap(newbitmap);
+                break;
+            case R.id.action_xuanzhuan://旋转
+                ImageProcess process1=new ImageProcess();
+
+                int xuan_position;
+                if (!init) {
+                    xuan_position = position_now;
+                } else {
+                    xuan_position = mHorizontalScrollView.getmShowIndex();
+                }
+                Bitmap bitmap1 = mImg.getDrawingCache();
+                Bitmap newbitmap1 = process1.rotate90(bitmap1);
+                mImg.setImageBitmap(newbitmap1);
+                break;
+
+
 
             default:
                 break;

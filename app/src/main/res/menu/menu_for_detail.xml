@@ -10,4 +10,14 @@
         android:icon="@drawable/about"
         app:showAsAction="always"
         android:title="关于"/>
+    <item
+        android:id="@+id/action_ruihua"
+        android:icon="@drawable/rh"
+        app:showAsAction="always"
+        android:title="锐化"/>
+    <item
+        android:id="@+id/action_xuanzhuan"
+        android:icon="@drawable/rf"
+        app:showAsAction="always"
+        android:title="旋转"/>
 </menu>

@@ -4,16 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-import com.fghz.album.Config;
 /**
  * Created by dongchangzhang on 1/19/17.
  */
@@ -37,10 +32,10 @@ public class MyDatabaseOperator {
         cursor = db.query(tableName, null, searchWhat, null, null, null, null);
         if (cursor != null) {
             Map<String, String> item;
-            List<Map> result = new ArrayList<>();
+            List<Map> result = new ArrayList<Map>();
             while (cursor.moveToNext()) {
                 String[] columnNames = cursor.getColumnNames();
-                item = new HashMap<>();
+                item = new HashMap<String, String>();
                 for (String colnmnName : columnNames) {
                     int columnIndex = cursor.getColumnIndex(colnmnName);
                     String columnValue = cursor.getString(columnIndex);

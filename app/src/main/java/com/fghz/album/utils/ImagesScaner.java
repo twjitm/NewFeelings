@@ -10,14 +10,13 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import com.fghz.album.Config;
+import com.fghz.album.dao.MyDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.fghz.album.Config;
-import com.fghz.album.dao.MyDatabaseHelper;
 
 /**
  * Created by me on 16-12-31.
@@ -38,7 +37,7 @@ public  class ImagesScaner {
 
 
     public static List<Map> getAlbumPhotos(Context ctx, String name) {
-        List<Map> result = new ArrayList<>();
+        List<Map> result = new ArrayList<Map>();
         MyDatabaseHelper dbHelper = new MyDatabaseHelper(ctx, "Album.db", null, Config.dbversion);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = null;
@@ -46,7 +45,7 @@ public  class ImagesScaner {
         if (cursor.moveToFirst()) {
             Map<String, String> tmp;
             do {
-                tmp = new HashMap<>();
+                tmp = new HashMap<String, String>();
                 String album_name = cursor.getString(cursor.getColumnIndex("album_name"));
                 String url = cursor.getString(cursor.getColumnIndex("url"));
                 tmp.put("album_name", album_name);
@@ -60,7 +59,7 @@ public  class ImagesScaner {
         return result;
     }
     public static List<Map<String, String>> getAlbumInfo(Context ctx) {
-        List<Map<String, String>> result = new ArrayList<>();
+        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
         Config.dbHelper = new MyDatabaseHelper(ctx, "Album.db", null, Config.dbversion);
         SQLiteDatabase db = Config.dbHelper.getWritableDatabase();
         Cursor cursor = null;
@@ -68,7 +67,7 @@ public  class ImagesScaner {
         if (cursor.moveToFirst()) {
             Map<String, String> tmp;
             do {
-                tmp = new HashMap<>();;
+                tmp = new HashMap<String, String>();;
                 String album_name = cursor.getString(cursor.getColumnIndex("album_name"));
                 String url = cursor.getString(cursor.getColumnIndex("show_image"));
                 tmp.put("album_name", album_name);
@@ -97,10 +96,10 @@ public  class ImagesScaner {
         //  Cursor cursor = contentResolver.query(uri, columns, null, null, null);//获取指定列
         if (cursor != null) {
             Map<String, String> item = null;
-            List<Map> result = new ArrayList<>();
+            List<Map> result = new ArrayList<Map>();
             while (cursor.moveToNext()) {
                 String[] columnNames = cursor.getColumnNames();
-                item = new HashMap<>();
+                item = new HashMap<String, String>();
                 for (String colnmnName : columnNames) {
                     int columnIndex = cursor.getColumnIndex(colnmnName);
                     String columnValue = cursor.getString(columnIndex);
@@ -129,7 +128,7 @@ public  class ImagesScaner {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String[] columnNames = cursor.getColumnNames();
-                result = new HashMap<>();
+                result = new HashMap<String, String>();
                 for (String colnmnName : columnNames) {
                     int columnIndex = cursor.getColumnIndex(colnmnName);
                     String columnValue = cursor.getString(columnIndex);
@@ -144,7 +143,7 @@ public  class ImagesScaner {
     }
 
     public static ArrayList<HashMap<String,String>> getAllPictures(Context context) {
-        ArrayList<HashMap<String,String>> picturemaps = new ArrayList<>();
+        ArrayList<HashMap<String,String>> picturemaps = new ArrayList<HashMap<String,String>>();
         HashMap<String,String> picturemap = null;
         ContentResolver cr = context.getContentResolver();
         //先得到缩略图的URL和对应的图片id
@@ -159,7 +158,7 @@ public  class ImagesScaner {
                 null);
         if (cursor.moveToFirst()) {
             do {
-                picturemap = new HashMap<>();
+                picturemap = new HashMap<String,String>();
                 picturemap.put("image_id_path",cursor.getInt(0)+"");
                 picturemap.put("thumbnail_path",cursor.getString(1));
                 picturemaps.add(picturemap);

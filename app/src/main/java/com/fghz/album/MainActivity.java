@@ -9,7 +9,6 @@ import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -19,13 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.ParcelFileDescriptor;
+import android.os.*;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -40,7 +33,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.fghz.album.R;
+import com.fghz.album.dao.MyDatabaseHelper;
+import com.fghz.album.dao.MyDatabaseOperator;
 import org.tensorflow.demo.Classifier;
 import org.tensorflow.demo.TensorFlowImageClassifier;
 
@@ -51,12 +46,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import com.fghz.album.dao.MyDatabaseHelper;
-
-import com.fghz.album.R;
-import com.fghz.album.dao.MyDatabaseOperator;
 
 import static com.fghz.album.utils.ImageDealer.do_tensorflow;
 import static com.fghz.album.utils.ImageDealer.insertImageIntoDB;
