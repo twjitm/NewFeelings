@@ -4,7 +4,16 @@
     tools:context=".PhotoDetailActivity"
 
     >
-
+    <item
+        android:id="@+id/action_sharee"
+        android:icon="@drawable/tab_share"
+        app:showAsAction="always"
+        android:title="分享"/>
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@drawable/tab_delete"
+        app:showAsAction="always"
+        android:title="删除"/>
     <item
         android:id="@+id/action_about"
         android:icon="@drawable/about"

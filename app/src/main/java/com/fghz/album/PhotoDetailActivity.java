@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -127,7 +128,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
             mDatas = getMediaImageInfo(this.getBaseContext());
         mImg = (ImageView) findViewById(R.id.id_content);
 //        mAttacher = new PhotoViewAttacher(mImg);
-        Glide.with(PhotoDetailActivity.this).load((String) mDatas.get(position_now).get("_data")).transform(new RotateTransformation(PhotoDetailActivity.this,90f)).dontAnimate().into(mImg);
+        Glide.with(PhotoDetailActivity.this).load((String) mDatas.get(position_now).get("_data")).transform(new RotateTransformation(PhotoDetailActivity.this, 90f)).dontAnimate().into(mImg);
 
         mHorizontalScrollView = (MyHorizontalScrollView) findViewById(R.id.id_horizontalScrollView);
         mAdapter = new HorizontalScrollViewAdapter(this, mDatas);
@@ -227,6 +228,35 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
                 // 返回
                 this.finish();
                 break;
+            case R.id.action_delete://删除
+                int deletep;
+                if (!init) {
+                    deletep = position_now;
+                } else {
+                    deletep = mHorizontalScrollView.getmShowIndex();
+                }
+                String imageUir = (String) mDatas.get(deletep).get("_data");
+                File file = new File(imageUir);
+                file.delete();
+                getContentResolver().delete(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        MediaStore.Images.Media.DATA + "=?",
+                        new String[]{imageUir});//删除系统缩略图
+                file.delete();//删除SD中图片
+                finish();
+                Intent intent1 = new Intent(PhotoDetailActivity.this, PhotoDetailActivity.class);
+                startActivity(intent1);
+
+                // getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Audio.Media.DATA + "=?",imageUir);
+                break;
+            case R.id.action_sharee://分享
+                Intent sendIntent = new Intent();
+                 sendIntent.setAction(Intent.ACTION_SEND);
+                 sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+                sendIntent.setType("text/plain");
+                 startActivity(sendIntent);
+                break;
+
             case R.id.action_about:
                 // go to PhotoInfoActivity
                 Intent intent = new Intent(this, PhotoInfoActivity.class);
@@ -242,7 +272,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
                 startActivity(intent);
                 break;
             case R.id.action_ruihua://图片锐化
-                ImageProcess process=new ImageProcess();
+                ImageProcess process = new ImageProcess();
                 int rui_position;
                 if (!init) {
                     rui_position = position_now;
@@ -254,7 +284,7 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
                 mImg.setImageBitmap(newbitmap);
                 break;
             case R.id.action_xuanzhuan://旋转
-                ImageProcess process1=new ImageProcess();
+                ImageProcess process1 = new ImageProcess();
 
                 int xuan_position;
                 if (!init) {
@@ -266,7 +296,6 @@ public class PhotoDetailActivity extends AppCompatActivity /*implements View.OnC
                 Bitmap newbitmap1 = process1.rotate90(bitmap1);
                 mImg.setImageBitmap(newbitmap1);
                 break;
-
 
 
             default:
